@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "./AuthContext"
+import showImg from "./assets/visibility_on.png"
+import hideImg from "./assets/visibility_off.png"
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -8,6 +10,8 @@ export default function SignupPage() {
     password: "",
     role: "",
   })
+  const [showPassword, setShowPassword] = useState(false)
+
   const [error, setError] = useState("")
   const navigate = useNavigate()
   const { signup, isLoading } = useAuth()
@@ -52,17 +56,24 @@ export default function SignupPage() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Password</label>
+            <div className="form-group password-group">
+            <label className="form-label">Password</label>
+            <div className="password-wrapper">
               <input
-                type="password"
-                name="password"
-                className="form-input"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
+              type={showPassword ? "text" : "password"}
+              name="password"
+              className="form-input"
+              value={formData.password}
+              onChange={handleChange}
+              required/>
+    <img
+      src={showPassword ? hideImg : showImg}
+      alt="Toggle Password"
+      className="toggle-password"
+      onClick={() => setShowPassword(!showPassword)}
+    />
+  </div>
+</div>
 
             <div className="form-group">
               <label className="form-label">Select Role</label>

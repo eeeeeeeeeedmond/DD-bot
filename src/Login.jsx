@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "./AuthContext"
 import logoImg from "./assets/logo.png"
+import showImg from "./assets/visibility_on.png"
+import hideImg from "./assets/visibility_off.png"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -11,6 +13,7 @@ export default function LoginPage() {
     userId: "",
     password: "",
   })
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const { login, isLoading } = useAuth()
   const navigate = useNavigate()
@@ -104,8 +107,9 @@ export default function LoginPage() {
               <label htmlFor="password" className="form-label">
                 Password
               </label>
+              <div className="password-wrapper">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password}
@@ -114,7 +118,13 @@ export default function LoginPage() {
                 placeholder="Enter your password"
                 required
               />
+            <img
+            src={showPassword ? hideImg : showImg}
+            alt="Toggle Password"
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}/>
             </div>
+          </div>
 
             {error && <div className="error-message">{error}</div>}
 
