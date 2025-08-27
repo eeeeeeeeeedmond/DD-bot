@@ -5,6 +5,7 @@ from typing import List
 from .. import models
 from .. import database
 from ..services.user_service import UserService
+from ..services.parent_service import ParentService 
 
 router = APIRouter()
 
@@ -22,3 +23,11 @@ def login(user_data: models.UserLogin, session: Session = Depends(database.get_s
     user_service = UserService(session)
     login_type = user_service.login(user_data)
     return login_type
+
+# ------------------------------- PARENTS ------------------------------
+@router.post("/create-kid-account/")
+def create_kid_account(kid_data: models.KidCreate, session: Session = Depends(database.get_session)) -> models.CreateKidAccountMessage:
+
+    parent_service = ParentService(session)
+    creation_data = parent_service.create_kid_account(kid_data)
+    return creation_data

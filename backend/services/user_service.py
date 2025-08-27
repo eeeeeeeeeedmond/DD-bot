@@ -97,12 +97,13 @@ class UserService():
                 login_data.success = False
                 login_data.message = "Librarian account is rejected or pending review"
                 return login_data
-        
-        
+
+
 
         login_data = models.LoginMessage
         login_data.success = True
         login_data.message = "Login successful"
+        login_data.user_id = existing_user.user_id
         login_data.usertype = existing_user.role.name.value
 
         return login_data

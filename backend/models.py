@@ -38,6 +38,7 @@ class UserLogin(SQLModel):
 class KidCreate(SQLModel):
     username: str
     password: str
+    parent_id: int
 
 
 
@@ -45,8 +46,13 @@ class KidCreate(SQLModel):
 class LoginMessage(SQLModel):
     success: bool
     message: str
+    user_id: Optional[int] = None
     usertype: Optional[str] = None
 
+# for parents creating kid account
+class CreateKidAccountMessage(SQLModel):
+    success: bool
+    message: str
 
 
 
@@ -64,7 +70,7 @@ class Roles (SQLModel, table=True):
 class Users(SQLModel, table=True):
     user_id: int | None = Field(default=None, primary_key=True)
     username: str = Field(index=True, unique=True, nullable=False)
-    email: str = Field(unique=True, nullable=False)
+    email: str = Field(unique=True, nullable=True)
     password_hash: str = Field(nullable=False)
 
     # Foreign key references the primary key of the Roles table
