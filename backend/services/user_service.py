@@ -33,19 +33,30 @@ class UserService():
         role = self.session.exec(role_statement).one()
 
         # create the user
-        new_parent = models.Users(
+        new_user = models.Users(
             username = user_data.username,
             email = user_data.email,
             password_hash = password_hashed,
             role_id = role.role_id
         )
 
-        self.session.add(new_parent)
+        self.session.add(new_user)
         self.session.commit()
-        self.session.refresh(new_parent)
+        self.session.refresh(new_user)
 
+        # if the user is a librarian add to librarianprofiles table
+        if user_data.usertype == models.RegisterableUserType.LIBRARIAN:
+            librarian_profile = models.LibrarianProfiles(user_id=new_user.user_id)
+            self.session.add(librarian_profile)
+            self.session.commit()
+            self.session.refresh(librarian_profile)
+        
         return True
     
+    # login check order
+    # 1. username exists
+    # 2. password is correct
+    # 3. if its librarian, check account status
     def login(self, user_data: models.UserLogin) -> models.LoginMessage:
         
         # check if user exists
@@ -60,7 +71,6 @@ class UserService():
             login_data.success = False
             login_data.message = "Username does not exist"
             return login_data
-        
 
         # user exists, so check password
         password_bytes = user_data.password.encode('utf-8')
@@ -73,6 +83,21 @@ class UserService():
             login_data.success = False
             login_data.message = "password incorrect"
             return login_data
+        
+        # check if user is a librarian, check status
+        if existing_user.role.name == models.UserType.LIBRARIAN:
+            profile_statement = select(models.LibrarianProfiles).where(
+                models.LibrarianProfiles.user_id == existing_user.user_id
+            )
+            librarian_profile = self.session.exec(profile_statement).first()
+
+            # check if librarian profile is NOT approved
+            if not librarian_profile or librarian_profile.status != models.StatusType.APPROVED:
+                login_data = models.LoginMessage
+                login_data.success = False
+                login_data.message = "Librarian account is rejected or pending review"
+                return login_data
+        
         
 
         login_data = models.LoginMessage

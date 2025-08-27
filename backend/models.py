@@ -45,7 +45,7 @@ class KidCreate(SQLModel):
 class LoginMessage(SQLModel):
     success: bool
     message: str
-    usertype: Optional[UserType]
+    usertype: Optional[str] = None
 
 
 

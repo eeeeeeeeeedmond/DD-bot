@@ -8,9 +8,9 @@ from ..services.user_service import UserService
 
 router = APIRouter()
 
-# Parent signup
-@router.post("/parent-signup/")
-def parent_signup(user_data: models.UserRegister, session: Session = Depends(database.get_session)) -> bool:
+# Parent & librarian signup
+@router.post("/signup/")
+def signup(user_data: models.UserRegister, session: Session = Depends(database.get_session)) -> bool:
 
     user_service = UserService(session)
     success = user_service.registerAccount(user_data)
