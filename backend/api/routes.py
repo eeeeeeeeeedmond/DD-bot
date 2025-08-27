@@ -15,3 +15,10 @@ def parent_signup(user_data: models.UserRegister, session: Session = Depends(dat
     user_service = UserService(session)
     success = user_service.registerAccount(user_data)
     return success
+
+@router.post("/login/")
+def login(user_data: models.UserLogin, session: Session = Depends(database.get_session)) -> models.LoginMessage:
+
+    user_service = UserService(session)
+    login_type = user_service.login(user_data)
+    return login_type

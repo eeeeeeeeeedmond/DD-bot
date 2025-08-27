@@ -1,6 +1,7 @@
 import bcrypt
 from sqlmodel import Session, select
 from .. import models
+from sqlalchemy.orm import selectinload
 
 class UserService():
 
@@ -43,5 +44,40 @@ class UserService():
         self.session.commit()
         self.session.refresh(new_parent)
 
-
         return True
+    
+    def login(self, user_data: models.UserLogin) -> models.LoginMessage:
+        
+        # check if user exists
+        statement = select(models.Users).where(
+            (models.Users.username == user_data.username)
+        ).options(selectinload(models.Users.role))
+
+        existing_user = self.session.exec(statement).first()
+
+        if not existing_user:
+            login_data = models.LoginMessage
+            login_data.success = False
+            login_data.message = "Username does not exist"
+            return login_data
+        
+
+        # user exists, so check password
+        password_bytes = user_data.password.encode('utf-8')
+        stored_hash_bytes = existing_user.password_hash.encode('utf-8')
+
+        is_password_correct = bcrypt.checkpw(password_bytes, stored_hash_bytes)
+
+        if not is_password_correct:
+            login_data = models.LoginMessage
+            login_data.success = False
+            login_data.message = "password incorrect"
+            return login_data
+        
+
+        login_data = models.LoginMessage
+        login_data.success = True
+        login_data.message = "Login successful"
+        login_data.usertype = existing_user.role.name.value
+
+        return login_data

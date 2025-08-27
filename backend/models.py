@@ -24,17 +24,29 @@ class StatusType(str, enum.Enum):
     APPROVED = "approved"
     REJECTED = "rejected"
 
-# ---------------------- SCHEMAS FOR ROUTES ---------------------------------
+# ---------------------- SCHEMAS FOR ROUTES (INTAKE) ---------------------------------
 class UserRegister(SQLModel):
     username: str
     password: str
     email: str
     usertype: RegisterableUserType
 
+class UserLogin(SQLModel):
+    username: str
+    password: str
+
 class KidCreate(SQLModel):
     username: str
     password: str
-    email: Optional[str]
+
+
+
+# ---------------------- SCHEMAS FOR ROUTES (OUTPUT) ---------------------------------
+class LoginMessage(SQLModel):
+    success: bool
+    message: str
+    usertype: Optional[UserType]
+
 
 
 
