@@ -58,6 +58,12 @@ class CreateKidAccountMessage(SQLModel):
     success: bool
     message: str
 
+# to view kids accounts
+class KidAccountDetails(SQLModel):
+    username: str
+    first_name: str
+    last_name: str
+
 
 
 

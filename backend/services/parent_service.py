@@ -2,6 +2,7 @@ import bcrypt
 from sqlmodel import Session, select
 from .. import models
 from sqlalchemy.orm import selectinload
+from typing import List
 
 class ParentService():
 
@@ -60,3 +61,27 @@ class ParentService():
         creation_data.success = True
         creation_data.message = "Kid Account successfully created"
         return creation_data
+
+    def view_kids_accounts(self, parent_id: int) -> List[models.KidAccountDetails]:
+
+        statement = select(models.Users).join(
+            models.KidProfiles,
+            models.Users.user_id == models.KidProfiles.user_id
+        ).where(
+            models.KidProfiles.parent_id == parent_id
+        )
+
+        kids_from_db = self.session.exec(statement).all()
+
+        kids_details_list = []
+        for kid in kids_from_db:
+            kid_detail = models.KidAccountDetails(
+                username = kid.username,
+                first_name = kid.first_name,
+                last_name = kid.last_name
+            )
+
+            kids_details_list.append(kid_detail)
+
+        return kids_details_list
+        

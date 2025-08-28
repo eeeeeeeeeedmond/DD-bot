@@ -31,3 +31,10 @@ def create_kid_account(kid_data: models.KidCreate, session: Session = Depends(da
     parent_service = ParentService(session)
     creation_data = parent_service.create_kid_account(kid_data)
     return creation_data
+
+@router.get("/view-kid-accounts/")
+def view_kids_accounts(parent_id: int, session: Session = Depends(database.get_session)) -> List[models.KidAccountDetails]:
+
+    parent_service = ParentService(session)
+    kids_accounts = parent_service.view_kids_accounts(parent_id)
+    return kids_accounts
