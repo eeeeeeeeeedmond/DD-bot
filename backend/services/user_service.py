@@ -37,7 +37,9 @@ class UserService():
             username = user_data.username,
             email = user_data.email,
             password_hash = password_hashed,
-            role_id = role.role_id
+            role_id = role.role_id,
+            first_name = user_data.first_name,
+            last_name = user_data.last_name
         )
 
         self.session.add(new_user)

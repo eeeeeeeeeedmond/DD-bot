@@ -28,6 +28,8 @@ class StatusType(str, enum.Enum):
 class UserRegister(SQLModel):
     username: str
     password: str
+    first_name: str
+    last_name: str
     email: str
     usertype: RegisterableUserType
 
@@ -37,6 +39,8 @@ class UserLogin(SQLModel):
 
 class KidCreate(SQLModel):
     username: str
+    first_name: str
+    last_name: str
     password: str
     parent_id: int
 
@@ -70,6 +74,8 @@ class Roles (SQLModel, table=True):
 class Users(SQLModel, table=True):
     user_id: int | None = Field(default=None, primary_key=True)
     username: str = Field(index=True, unique=True, nullable=False)
+    first_name: str = Field(nullable=False)
+    last_name: str = Field(nullable=False)
     email: str = Field(unique=True, nullable=True)
     password_hash: str = Field(nullable=False)
 

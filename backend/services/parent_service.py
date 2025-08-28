@@ -38,7 +38,9 @@ class ParentService():
             username = kid_data.username,
             email = None,
             password_hash = password_hashed,
-            role_id = kid_role.role_id
+            role_id = kid_role.role_id,
+            first_name = kid_data.first_name,
+            last_name = kid_data.last_name
         )
 
         self.session.add(new_kid_user)
