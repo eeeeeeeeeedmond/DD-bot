@@ -2,7 +2,7 @@
 import enum
 from typing import Optional, List
 
-from sqlalchemy import Column, Enum, ForeignKey
+from sqlalchemy import Column, Enum, ForeignKey, TEXT
 from sqlmodel import Field, SQLModel, Relationship, Session 
 
 # The Enum for all possible user types in the database
@@ -134,7 +134,7 @@ class ParentReviews(SQLModel, table=True):
         sa_column=Column(ForeignKey("users.user_id", ondelete="CASCADE", onupdate="CASCADE"))
     )
 
-    review: str = Field(nullable=False, default="No comment")
+    review: str = Field(sa_column=Column(TEXT, nullable=False), default="No comment")
 
 
 

@@ -120,7 +120,7 @@ class ParentService():
                 review = clean_review
             )
 
-            self.session.add(new_review)
+            self.session.add(new_review) # will fail if parent id is incorect
             self.session.commit()
             self.session.refresh(new_review)
 
