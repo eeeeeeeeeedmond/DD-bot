@@ -69,10 +69,7 @@ class UserService():
         existing_user = self.session.exec(statement).first()
 
         if not existing_user:
-            login_data = models.LoginMessage
-            login_data.success = False
-            login_data.message = "Username does not exist"
-            return login_data
+            return models.LoginMessage(success=False, message="User does not exist")
 
         # user exists, so check password
         password_bytes = user_data.password.encode('utf-8')
@@ -81,10 +78,7 @@ class UserService():
         is_password_correct = bcrypt.checkpw(password_bytes, stored_hash_bytes)
 
         if not is_password_correct:
-            login_data = models.LoginMessage
-            login_data.success = False
-            login_data.message = "password incorrect"
-            return login_data
+            return models.LoginMessage(success=False, message="Password incorrect")
         
         # check if user is a librarian, check status
         if existing_user.role.name == models.UserType.LIBRARIAN:
@@ -95,17 +89,11 @@ class UserService():
 
             # check if librarian profile is NOT approved
             if not librarian_profile or librarian_profile.status != models.StatusType.APPROVED:
-                login_data = models.LoginMessage
-                login_data.success = False
-                login_data.message = "Librarian account is rejected or pending review"
-                return login_data
-
-
-
-        login_data = models.LoginMessage
-        login_data.success = True
-        login_data.message = "Login successful"
-        login_data.user_id = existing_user.user_id
-        login_data.usertype = existing_user.role.name.value
-
-        return login_data
+                return models.LoginMessage(success=False, message="Librarian account pending review or rejected")
+            
+        return models.LoginMessage(
+            success=True,
+            message="Login Successful",
+            user_id=existing_user.user_id,
+            usertype=existing_user.role.name.value
+        )

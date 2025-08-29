@@ -44,6 +44,9 @@ class KidCreate(SQLModel):
     password: str
     parent_id: int
 
+class KidDelete(SQLModel):
+    username: str
+    parent_id: int
 
 
 # ---------------------- SCHEMAS FOR ROUTES (OUTPUT) ---------------------------------
