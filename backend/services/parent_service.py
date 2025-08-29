@@ -78,10 +78,31 @@ class ParentService():
             kid_detail = models.KidAccountDetails(
                 username = kid.username,
                 first_name = kid.first_name,
-                last_name = kid.last_name
+                last_name = kid.last_name,
+                user_id=kid.user_id
             )
 
             kids_details_list.append(kid_detail)
 
         return kids_details_list
+    
+    def delete_kids_account(self, delete_data: models.KidDelete) -> bool:
+        
+        statement = select(models.Users).join(
+            models.KidProfiles,
+            models.Users.user_id == models.KidProfiles.user_id
+        ).where(
+            models.Users.user_id == delete_data.kid_id,
+            models.KidProfiles.parent_id == delete_data.parent_id
+        )
+
+        user_to_delete = self.session.exec(statement).first()
+
+        if not user_to_delete:
+            return False
+        
+        self.session.delete(user_to_delete)
+        self.session.commit()
+        
+        return True
         

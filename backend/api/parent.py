@@ -29,5 +29,8 @@ def view_kids_accounts(parent_id: int, session: Session = Depends(database.get_s
     return kids_list
 
 @router.delete("/delete-kid-account/")
-def delete_kid_account():
-    return
+def delete_kid_account(delete_data: models.KidDelete, session: Session = Depends(database.get_session)) -> bool:
+     
+    parent_service = ParentService(session)
+    success = parent_service.delete_kids_account(delete_data)
+    return success

@@ -2,7 +2,7 @@
 import enum
 from typing import Optional, List
 
-from sqlalchemy import Column, Enum
+from sqlalchemy import Column, Enum, ForeignKey
 from sqlmodel import Field, SQLModel, Relationship, Session 
 
 # The Enum for all possible user types in the database
@@ -47,6 +47,7 @@ class KidCreate(SQLModel):
 class KidDelete(SQLModel):
     username: str
     parent_id: int
+    kid_id: int
 
 
 # ---------------------- SCHEMAS FOR ROUTES (OUTPUT) ---------------------------------
@@ -66,6 +67,7 @@ class KidAccountDetails(SQLModel):
     username: str
     first_name: str
     last_name: str
+    user_id: int
 
 
 
@@ -73,38 +75,44 @@ class KidAccountDetails(SQLModel):
 
 # ------------------------ SQL TABLES ----------------------------------------
 class Roles (SQLModel, table=True):
-    role_id: int | None = Field(default=None, primary_key=True)
-    name: UserType = Field(sa_column=Column(Enum(UserType)))
-
-    # A Role can have many Users.
-    # 'back_populates' points to the 'role' attribute in the Users model
-    users: list["Users"] = Relationship(back_populates="role")
+    role_id: Optional[int] = Field(default=None, primary_key=True)
+    name: UserType = Field(sa_column=Column(Enum(UserType), unique=True))
+    users: List["Users"] = Relationship(back_populates="role")
 
 class Users(SQLModel, table=True):
-    user_id: int | None = Field(default=None, primary_key=True)
+    user_id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(index=True, unique=True, nullable=False)
     first_name: str = Field(nullable=False)
     last_name: str = Field(nullable=False)
     email: str = Field(unique=True, nullable=True)
     password_hash: str = Field(nullable=False)
-
-    # Foreign key references the primary key of the Roles table
-    role_id: int | None = Field(default=None, foreign_key="roles.role_id")
-
-    role: Roles | None = Relationship(back_populates="users")
+    role_id: Optional[int] = Field(
+        default=None, 
+        sa_column=Column(ForeignKey("roles.role_id", ondelete="CASCADE", onupdate="CASCADE"))
+    )
+    role: Optional["Roles"] = Relationship(back_populates="users")
 
 class LibrarianProfiles(SQLModel, table=True):
-    # 1-to-1 relationship 
-    user_id: int | None = Field(default=None, foreign_key="users.user_id", primary_key=True)
-
+    user_id: Optional[int] = Field(
+        default=None,
+        sa_column=Column(
+            ForeignKey("users.user_id", ondelete="CASCADE", onupdate="CASCADE"),
+            primary_key=True
+        )
+    )
     status: StatusType = Field(sa_column=Column(Enum(StatusType)), default=StatusType.PENDING)
 
-
 class KidProfiles(SQLModel, table=True):
-    # 1-to-1 relationship
-    user_id: int | None = Field(default=None, foreign_key="users.user_id", primary_key=True)
-
-    parent_id: int = Field(foreign_key="users.user_id")
+    user_id: Optional[int] = Field(
+        default=None,
+        sa_column=Column(
+            ForeignKey("users.user_id", ondelete="CASCADE", onupdate="CASCADE"),
+            primary_key=True
+        )
+    )
+    parent_id: int = Field(
+        sa_column=Column(ForeignKey("users.user_id", ondelete="CASCADE", onupdate="CASCADE"))
+    )
 
 
 
