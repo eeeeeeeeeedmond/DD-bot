@@ -2,7 +2,9 @@ import bcrypt
 from sqlmodel import Session, select
 from .. import models
 from sqlalchemy.orm import selectinload
+from sqlalchemy.exc import IntegrityError
 from typing import List
+import bleach
 
 class ParentService():
 
@@ -106,3 +108,24 @@ class ParentService():
         
         return True
         
+    def create_review(self, review_data: models.AddReview) -> bool:
+
+        try:
+
+            # Sanitize the input to remove any HTML tags
+            clean_review = bleach.clean(review_data.message, tags=[], strip=True)
+
+            new_review = models.ParentReviews(
+                user_id = review_data.parent_id,
+                review = clean_review
+            )
+
+            self.session.add(new_review)
+            self.session.commit()
+            self.session.refresh(new_review)
+
+            return True
+        # if parent id is incorrect
+        except IntegrityError: 
+            self.session.rollback()
+            return False

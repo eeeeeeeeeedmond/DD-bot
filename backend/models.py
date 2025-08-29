@@ -49,6 +49,10 @@ class KidDelete(SQLModel):
     parent_id: int
     kid_id: int
 
+class AddReview(SQLModel):
+    parent_id: int
+    message: str
+
 
 # ---------------------- SCHEMAS FOR ROUTES (OUTPUT) ---------------------------------
 class LoginMessage(SQLModel):
@@ -86,6 +90,8 @@ class Users(SQLModel, table=True):
     last_name: str = Field(nullable=False)
     email: str = Field(unique=True, nullable=True)
     password_hash: str = Field(nullable=False)
+
+    # Foreign Key
     role_id: Optional[int] = Field(
         default=None, 
         sa_column=Column(ForeignKey("roles.role_id", ondelete="CASCADE", onupdate="CASCADE"))
@@ -93,6 +99,8 @@ class Users(SQLModel, table=True):
     role: Optional["Roles"] = Relationship(back_populates="users")
 
 class LibrarianProfiles(SQLModel, table=True):
+
+    # Foreign Key and Primary Key
     user_id: Optional[int] = Field(
         default=None,
         sa_column=Column(
@@ -103,6 +111,8 @@ class LibrarianProfiles(SQLModel, table=True):
     status: StatusType = Field(sa_column=Column(Enum(StatusType)), default=StatusType.PENDING)
 
 class KidProfiles(SQLModel, table=True):
+
+    # Foreign Key and Primary Key
     user_id: Optional[int] = Field(
         default=None,
         sa_column=Column(
@@ -114,6 +124,17 @@ class KidProfiles(SQLModel, table=True):
         sa_column=Column(ForeignKey("users.user_id", ondelete="CASCADE", onupdate="CASCADE"))
     )
 
+class ParentReviews(SQLModel, table=True):
+    # Auto-incrementing primary key for the review itself
+    review_id: int | None = Field(default=None, primary_key=True)
+
+    # user_id foreign key
+    user_id: int | None = Field(
+        default=None,
+        sa_column=Column(ForeignKey("users.user_id", ondelete="CASCADE", onupdate="CASCADE"))
+    )
+
+    review: str = Field(nullable=False, default="No comment")
 
 
 

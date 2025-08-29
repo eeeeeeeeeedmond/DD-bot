@@ -34,3 +34,10 @@ def delete_kid_account(delete_data: models.KidDelete, session: Session = Depends
     parent_service = ParentService(session)
     success = parent_service.delete_kids_account(delete_data)
     return success
+
+@router.post("/add-review/")
+def add_review(review_data: models.AddReview, session: Session = Depends(database.get_session)) -> bool:
+
+    parent_service = ParentService(session)
+    success = parent_service.create_review(review_data)
+    return success
